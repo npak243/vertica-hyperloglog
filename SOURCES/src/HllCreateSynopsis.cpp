@@ -17,6 +17,10 @@ class HllCreateSynopsis : public AggregateFunction
 
   public:
 
+  	  static int generate_initaggregate(){
+  		  static int count = 1;
+  		  return count++;
+  	  }
     virtual void initAggregate(ServerInterface &srvInterface, IntermediateAggs &aggs)
     {
         ParamReader paramReader= srvInterface.getParamReader();
@@ -33,6 +37,8 @@ class HllCreateSynopsis : public AggregateFunction
         this -> synopsisSize = initialHll.getSynopsisSize(format);
         try {
           initialHll.serialize(aggs.getStringRef(0).data(), format);
+          vint & id = aggs.getIntRef(1);
+          id = this->generate_initaggregate();
         } catch(SerializationError& e) {
           vt_report_error(0, e.what());
         }
@@ -95,6 +101,7 @@ class HllCreateSynopsisFactory : public AggregateFunctionFactory
       HLL dummy(readSubStreamBits(srvInterface));
       Format format = readSerializationFormat(srvInterface);
       intermediateTypeMetaData.addVarbinary(dummy.getSynopsisSize(format));
+      intermediateTypeMetaData.addInt("ID");
     }
 
 

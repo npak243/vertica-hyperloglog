@@ -100,6 +100,7 @@ class HllDistinctCountFactory : public AggregateFunctionFactory
       HLL dummy(readSubStreamBits(srvInterface));
       Format format = readSerializationFormat(srvInterface);
       intermediateTypeMetaData.addVarbinary(dummy.getSynopsisSize(format));
+      intermediateTypeMetaData.addInt("ID");
     }
 
 
